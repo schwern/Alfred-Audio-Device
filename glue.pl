@@ -20,29 +20,30 @@ if ( $action eq 'set' ) {
     print set_device($direction, $device) . "\n";
 }
 
+sub run_command {
+    open( my $fh, '-|', $FindBin::Bin . '/SwitchAudioSource', @_ );
+    my $output = join "\n", <$fh>;
+    close $fh;
+    return $output;
+}
+
 sub get_possibilities {
     my $direction = shift;
+    my $current_device = run_command('-ct', $direction );
+    chomp($current_device);
     my @devices;
-    open( my $fh, '-|', $FindBin::Bin . '/SwitchAudioSource',
-        '-at', $direction );
-    while ( my $line = <$fh> ) {
+    for my $line (split "\n", run_command( '-at', $direction ) ) {
         chomp $line;
-        $line =~ s/ \(\Q$direction\E\)$//;
+        next unless $line =~ s/ \(\Q$direction\E\)$//;
+        next if $line eq $current_device;
         push @devices, $line;
     }
-    close $fh;
     return \@devices;
 }
 
 sub set_device {
     my ( $direction, $device ) = @_;
-    set_device( 'system', $device ) if $direction eq 'output';
-
-    open( my $fh, '-|', $FindBin::Bin . '/SwitchAudioSource',
-        '-t', $direction, '-s', $device );
-    my $output = join "\n", <$fh>;
-    close $fh;
-    return $output;
+    return run_command( '-t', $direction, '-s', $device );
 }
 
 sub output_device {
