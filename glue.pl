@@ -5,8 +5,11 @@ use warnings;
 
 use FindBin;
 
-my $action = shift || 'list';
+our $VERSION = '0.02';
+
+my $action    = shift || 'list';
 my $direction = shift || 'output';
+
 
 if ($action eq 'list') {
     my $devices = get_possibilities($direction);
