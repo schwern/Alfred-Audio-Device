@@ -6,6 +6,9 @@ changing the OS X input and output audio devices. Under the hood it uses
 [SwitchAudio](https://github.com/deweller/switchaudio-osx) from deweller on
 GitHub.
 
+For more information and pretty pictures, I made a blog post about this when
+I initially wrote it. http://michael.thegrebs.com/2013/01/18/alfred2-audio-device/
+
 Installation
 ===
 
