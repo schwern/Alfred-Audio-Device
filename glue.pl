@@ -17,10 +17,28 @@ if ($action eq 'list') {
     print output_device($_) for @$devices;
     print "</items>\n";
 }
-
-if ( $action eq 'set' ) {
+elsif ( $action eq 'set' ) {
     my $device = shift;
     print set_device($direction, $device) . "\n";
+}
+elsif ( $action eq 'toggle' ) {
+    my $device1 = shift;
+    my $device2 = shift;
+    my $default_device = shift;
+
+    my $current_device = get_current_device($direction);
+    if( $current_device eq $device1 ) {
+        print set_device($direction, $device2) . "\n";
+    }
+    elsif( $current_device eq $device2 ) {
+        print set_device($direction, $device1) . "\n";
+    }
+    elsif( $default_device ) {
+        print set_device($direction, $default_device) . "\n";
+    }
+}
+else {
+    print "Unrecognized action '$action'\n";
 }
 
 sub run_command {
@@ -30,10 +48,18 @@ sub run_command {
     return $output;
 }
 
-sub get_possibilities {
+sub get_current_device {
     my $direction = shift;
+
     my $current_device = run_command('-ct', $direction );
     chomp($current_device);
+
+    return $current_device;
+}
+
+sub get_possibilities {
+    my $direction = shift;
+    my $current_device = get_current_device($direction);
     my @devices;
     for my $line (split "\n", run_command( '-at', $direction ) ) {
         chomp $line;
